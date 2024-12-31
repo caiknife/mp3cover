@@ -16,9 +16,20 @@ import (
 func SetCover(coverFile string, pathOrFile string) error {
 	pathOrFile = ncmdl.Path(pathOrFile)
 	if fileutil.IsDir(pathOrFile) {
-
+		files := ReadMP3FilesFromPath(pathOrFile)
+		files.ForEach(func(s string, i int) {
+			err := SetCoverForFile(coverFile, s)
+			if err != nil {
+				err = errors.WithMessage(err, "set cover for dir")
+				return
+			}
+		})
 	} else {
-
+		err := SetCoverForFile(coverFile, pathOrFile)
+		if err != nil {
+			err = errors.WithMessage(err, "set cover for file")
+			return err
+		}
 	}
 	return nil
 }
